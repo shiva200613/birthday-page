@@ -1,0 +1,150 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Happy Birthday dii Fraud</title>
+<style>
+  body{font-family:Arial,Helvetica,sans-serif;background:linear-gradient(180deg,#ffe6f0,#fff);margin:0;padding:0}
+  header{background:#ff3f7a;color:#fff;padding:14px 10px;text-align:center;font-weight:1000}
+  nav{display:flex;justify-content:center;gap:10px;padding:12px}
+  button{background:#fff;border:1px solid #ff7aa8;color:#ff2e74;padding:8px 12px;border-radius:8px;cursor:pointer}
+  .container{max-width:1200px;margin:18px auto;background:#fff;border-radius:12px;box-shadow:0 6px 20px rgba(0,0,0,.06);padding:18px}
+  .photos{display:flex;gap:10px;flex-wrap:wrap}
+  .photos img{width:32%;min-width:300px;height:450px;object-fit:cover;border-radius:10px}
+  .timeline-item{background:#fff5f9;border-left:4px solid #ff7aa8;margin:12px 0;padding:10px;border-radius:8px}
+  #diagnostic{font-size:13px;color:#333;background:#fff7fb;border:1px dashed #ffd6e6;padding:8px;border-radius:8px;margin-top:12px}
+  .small{color:#666;font-size:13px}
+  footer{text-align:center;color:#666;margin:18px 0;font-size:13px}
+  /* responsive */
+  @media (max-width:600px){ .photos img{width:55%} }
+</style>
+</head>
+<body>
+
+<header>🎉 Happy Birthday dii Fraud 💖</header>
+
+<nav>
+  <button id="btnHome">Wish Page</button>
+  <button id="btnGuest">Guestbook</button>
+</nav>
+
+<div id="home" class="container" aria-live="polite">
+  <h2>Our Sweet Memories 📸</h2>
+  <div class="photos" id="photosContainer">
+    <!-- images injected by script -->
+  </div>
+
+  <h3>Important Dates 💌</h3>
+  <div id="timeline">
+    <div class="timeline-item"><strong>Spl Meet 💞</strong><br><small>2025-05-02</small></div>
+    <div class="timeline-item"><strong>Spl Day 🌸</strong><br><small>2025-08-10</small></div>
+  </div>
+</div>
+
+<div id="guestbook" class="container" style="display:none">
+  <h2>Friends' Wishes 💬</h2>
+  <form id="wishForm">
+    <input id="wname" placeholder="Your name" style="width:100%;padding:8px;margin-bottom:8px" />
+    <textarea id="wtext" placeholder="Write your wish..." style="width:100%;height:80px;padding:8px"></textarea>
+    <div style="margin-top:8px"><button type="submit">Post Wish</button></div>
+  </form>
+
+  <div id="messages" style="margin-top:12px"></div>
+</div>
+
+<div class="container" id="diagnostic" aria-live="polite">
+  <strong>Diagnostics:</strong>
+  <div id="diagText" class="small">No errors yet — if a photo fails the message below will tell you which file to rename.</div>
+</div>
+
+<footer>Made with ❤️ by Shiva </footer>
+
+<script>
+(function(){
+  // Local filenames (in same folder)
+  const localFiles = ["photo1.jpeg","photo2.jpeg"];
+  // Fallback online images (guaranteed)
+  const fallback = [
+    "https://images.unsplash.com/photo-1524504388940-b1c1722653e1?w=1200&q=60&auto=format&fit=crop",
+    "https://images.unsplash.com/photo-1517841905240-472988babdf9?w=1200&q=60&auto=format&fit=crop",
+    "https://images.unsplash.com/photo-1529626455594-4ff0802cfb7e?w=1200&q=60&auto=format&fit=crop"
+  ];
+
+  const photosContainer = document.getElementById('photosContainer');
+  const diagText = document.getElementById('diagText');
+
+  // Try to load a local file; if it errors, use fallback and report which local file failed.
+  function appendImage(local, fallbackUrl, idx){
+    const img = document.createElement('img');
+    img.alt = 'photo'+(idx+1);
+    img.src = local;
+    img.addEventListener('error', function(){
+      img.src = fallbackUrl;
+      diagText.textContent = `Could not load "${local}". Make sure the file exists in the same folder and is named exactly "${local}".`;
+    });
+    photosContainer.appendChild(img);
+  }
+
+  // Insert images
+  for(let i=0;i<localFiles.length;i++){
+    appendImage(localFiles[i], fallback[i]||fallback[0], i);
+  }
+
+  // Navigation + hash
+  const home = document.getElementById('home');
+  const guest = document.getElementById('guestbook');
+  function show(name){
+    home.style.display = name==='home' ? 'block' : 'none';
+    guest.style.display = name==='guestbook' ? 'block' : 'none';
+    location.hash = name==='guestbook' ? '#guestbook' : '';
+  }
+  document.getElementById('btnHome').addEventListener('click', ()=> show('home'));
+  document.getElementById('btnGuest').addEventListener('click', ()=> show('guestbook'));
+  window.addEventListener('hashchange', ()=> { if(location.hash === '#guestbook') show('guestbook'); else show('home'); });
+  if(location.hash === '#guestbook') show('guestbook'); else show('home');
+
+  // Guestbook (localStorage)
+  const STORAGE_KEY = 'birthday_guestbook_v1';
+  const form = document.getElementById('wishForm');
+  const messagesDiv = document.getElementById('messages');
+
+  function loadMessages(){
+    try { const r = localStorage.getItem(STORAGE_KEY); return r ? JSON.parse(r) : []; }
+    catch(e){ diagText.textContent = 'Error reading stored wishes: ' + e.message; return []; }
+  }
+  function saveMessages(msgs){
+    try { localStorage.setItem(STORAGE_KEY, JSON.stringify(msgs)); } catch(e){ diagText.textContent = 'Error saving wish: ' + e.message; }
+  }
+  function renderMessages(){
+    const msgs = loadMessages();
+    messagesDiv.innerHTML = '';
+    if(msgs.length === 0){ messagesDiv.innerHTML = '<div class="small">No messages yet — be the first to wish!</div>'; return; }
+    msgs.slice().reverse().forEach(m => {
+      const d = document.createElement('div');
+      d.className = 'timeline-item';
+      d.innerHTML = `<strong>${escapeHtml(m.name||'Anonymous')}</strong><br><small>${new Date(m.time).toLocaleString()}</small><div style="margin-top:6px">${escapeHtml(m.text)}</div>`;
+      messagesDiv.appendChild(d);
+    });
+  }
+
+  form.addEventListener('submit', function(e){
+    e.preventDefault();
+    const name = document.getElementById('wname').value.trim() || 'Anonymous';
+    const text = document.getElementById('wtext').value.trim();
+    if(!text){ alert('Please write a short wish.'); return; }
+    const msgs = loadMessages();
+    msgs.push({ name, text, time: new Date().toISOString() });
+    saveMessages(msgs);
+    form.reset();
+    renderMessages();
+  });
+
+  renderMessages();
+
+  function escapeHtml(s){ return String(s).replace(/[&<>"']/g, c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
+
+})();
+</script>
+</body>
+</html>
